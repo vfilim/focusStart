@@ -1,5 +1,5 @@
 package ru.focus_start.filimonov.merge_sort;
 
-interface Comparator {
-    int compare(Comparable o1, Comparable o2);
+interface Comparator<T> {
+    int compare(Comparable<T> o1, Comparable<T> o2);
 }

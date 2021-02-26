@@ -2,7 +2,6 @@ package ru.focus_start.filimonov.merge_sort;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class Main {
     public static void main(String[] args) {
@@ -45,7 +44,7 @@ public class Main {
 
         i++;
 
-        ArrayList<File> inputFiles = new ArrayList<File>(args.length - i);
+        ArrayList<File> inputFiles = new ArrayList<>(args.length - i);
 
         while (i < args.length) {
             File inputFile = new File(args[i]);
@@ -59,42 +58,27 @@ public class Main {
             i++;
         }
 
-        Sorter sorter;
-
-
         Comparator comparator;
 
-        if (sortMode.descending){
-            comparator = new Comparator(){
-                public int compare (Comparable c1, Comparable c2){
+        if (sortMode.descending) {
+            comparator = new Comparator() {
+                public int compare(Comparable c1, Comparable c2) {
                     return c2.compareTo(c1);
                 }
             };
         } else {
-            comparator = new Comparator(){
-                public int compare (Comparable c1, Comparable c2){
+            comparator = new Comparator() {
+                public int compare(Comparable c1, Comparable c2) {
                     return c1.compareTo(c2);
                 }
             };
         }
 
-        if (sortMode.isStringType) {
-            sorter = new Sorter() {
-                public File getSorted(File input1, File input2) {
-                    return Main.<String>getSortedUntypezed(input1, input2, comparator);
-                }
-            };
-        } else {
-            sorter = new Sorter() {
-                public File getSorted(File input1, File input2) {
-                    return Main.<Integer>getSortedUntypezed(input1, input2, comparator);
-                }
-            };
-        }
+        Sorter sorter = sortMode.isStringType ? new Sorter<String>() : new Sorter<Integer>();
 
         while (inputFiles.size() != 1) {
             for (int j = 0; j < inputFiles.size() - 1; j++) {
-                inputFiles.set(j, sorter.getSorted(inputFiles.get(j), inputFiles.get(j + 1)));
+                inputFiles.set(j, sorter.getSorted(inputFiles.get(j), inputFiles.get(j + 1), comparator));
 
                 inputFiles.remove(j + 1);
             }
@@ -112,56 +96,7 @@ public class Main {
                 result.println(buffer);
             }
         } catch (IOException e) {
-
+            System.out.println("IOException of writing final output file");
         }
-    }
-
-    private static <T> File getSortedUntypezed(File input1, File input2, Comparator comparator) {
-        LinkedList<T> sortedList = new LinkedList<>();
-
-        try (BufferedReader reader1 = new BufferedReader(new FileReader(input1.getPath()));
-             BufferedReader reader2 = new BufferedReader(new FileReader(input2.getPath()))) {
-
-            String[] buffer = new String[2];
-
-            buffer[0] = reader1.readLine();
-            buffer[1] = reader2.readLine();
-
-            while (buffer[0] != null && buffer[1] != null) {
-                if (comparator.compare(buffer[0], buffer[1]) < 0) {
-                    sortedList.add((T) buffer[0]);
-                    buffer[0] = reader1.readLine();
-                } else {
-                    sortedList.add((T) buffer[1]);
-                    buffer[1] = reader2.readLine();
-                }
-            }
-
-            if (buffer[0] == null) {
-                while (buffer[1] != null) {
-                    sortedList.add((T) buffer[1]);
-                    buffer[1] = reader2.readLine();
-                }
-            } else {
-                while (buffer[0] != null) {
-                    sortedList.add((T) buffer[0]);
-                    buffer[0] = reader1.readLine();
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("The file isn't found");
-        }
-
-        File output = null;
-
-        try (PrintWriter writer = new PrintWriter(output = File.createTempFile("mergeSort", "b"))) {
-            for (T e : sortedList) {
-                writer.println(e);
-            }
-
-        } catch (IOException e) {
-        }
-
-        return output;
     }
 }
