@@ -58,27 +58,11 @@ public class Main {
             i++;
         }
 
-        Comparator comparator;
-
-        if (sortMode.descending) {
-            comparator = new Comparator() {
-                public int compare(Comparable c1, Comparable c2) {
-                    return c2.compareTo(c1);
-                }
-            };
-        } else {
-            comparator = new Comparator() {
-                public int compare(Comparable c1, Comparable c2) {
-                    return c1.compareTo(c2);
-                }
-            };
-        }
-
-        Sorter sorter = sortMode.isStringType ? new Sorter<String>() : new Sorter<Integer>();
+        Sorter sorter = new Sorter(sortMode);
 
         while (inputFiles.size() != 1) {
             for (int j = 0; j < inputFiles.size() - 1; j++) {
-                inputFiles.set(j, sorter.getSorted(inputFiles.get(j), inputFiles.get(j + 1), comparator));
+                inputFiles.set(j, sorter.getSorted(inputFiles.get(j), inputFiles.get(j + 1)));
 
                 inputFiles.remove(j + 1);
             }
