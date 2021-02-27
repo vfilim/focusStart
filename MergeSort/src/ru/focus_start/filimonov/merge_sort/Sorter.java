@@ -20,11 +20,30 @@ class Sorter {
 
             String[] buffer = new String[2];
 
-            buffer[0] = reader0.readLine();
-            buffer[1] = reader1.readLine();
+            while (true) {
+                buffer[0] = reader0.readLine();
+                buffer[1] = reader1.readLine();
 
-            checkType(buffer[0]);
-            checkType(buffer[1]);
+                try {
+                    checkType(buffer[0]);
+                } catch (NumberFormatException e) {
+                    System.out.println("The integer sorting mode is turned on. " + buffer[0] + " is dropped, because it is not integer");
+
+                    buffer[0] = reader0.readLine();
+                    continue;
+                }
+
+                try {
+                    checkType(buffer[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("The integer sorting mode is turned on. " + buffer[1] + " is dropped, because it is not integer");
+
+                    buffer[1] = reader1.readLine();
+                    continue;
+                }
+
+                break;
+            }
 
             String lastElement0 = buffer[0];
             String lastElement1 = buffer[1];
