@@ -20,62 +20,30 @@ class Sorter {
 
             String[] buffer = new String[2];
 
-            while (true) {
+            buffer[0] = reader0.readLine();
+            buffer[1] = reader1.readLine();
+
+            while (checkEmptyLine(buffer[0], input0)){
                 buffer[0] = reader0.readLine();
+            }
+
+            while (checkEmptyLine(buffer[0], input1)){
                 buffer[1] = reader1.readLine();
-
-                try {
-                    checkType(buffer[0]);
-                } catch (NumberFormatException e) {
-                    System.out.println("The integer sorting mode is turned on. " + buffer[0] + " is dropped, because it is not integer");
-
-                    buffer[0] = reader0.readLine();
-                    continue;
-                }
-
-                try {
-                    checkType(buffer[1]);
-                } catch (NumberFormatException e) {
-                    System.out.println("The integer sorting mode is turned on. " + buffer[1] + " is dropped, because it is not integer");
-
-                    buffer[1] = reader1.readLine();
-                    continue;
-                }
-
-                break;
             }
 
             String lastElement0 = buffer[0];
             String lastElement1 = buffer[1];
 
             while (buffer[0] != null && buffer[1] != null) {
-                if (checkEmptyLine(buffer[0], input0) || !checkOrder(buffer[0], lastElement0, input0)) {
+                if (checkLine(buffer[0], lastElement0, input0)) {
                     buffer[0] = reader0.readLine();
 
                     continue;
                 }
 
-                if (checkEmptyLine(buffer[1], input1) || !checkOrder(buffer[1], lastElement1, input1)) {
+                if (checkLine(buffer[1], lastElement1, input1)) {
                     buffer[1] = reader1.readLine();
 
-                    continue;
-                }
-
-                try {
-                    checkType(buffer[0]);
-                } catch (NumberFormatException e) {
-                    System.out.println("The integer sorting mode is turned on. " + buffer[0] + " is dropped, because it is not integer");
-
-                    buffer[0] = reader0.readLine();
-                    continue;
-                }
-
-                try {
-                    checkType((buffer[1]));
-                } catch (NumberFormatException e) {
-                    System.out.println("The integer sorting mode is turned on. " + buffer[1] + " is dropped, because it is not integer");
-
-                    buffer[1] = reader1.readLine();
                     continue;
                 }
 
@@ -96,18 +64,9 @@ class Sorter {
 
             if (buffer[0] == null) {
                 while (buffer[1] != null) {
-                    if (checkEmptyLine(buffer[1], input1) || !checkOrder(buffer[1], lastElement1, input1)) {
+                    if (checkLine(buffer[1], lastElement1, input1)) {
                         buffer[1] = reader0.readLine();
 
-                        continue;
-                    }
-
-                    try {
-                        checkType(buffer[1]);
-                    } catch (NumberFormatException e) {
-                        System.out.println("The integer sorting mode is turned on. " + buffer[1] + " is dropped, because it is not integer");
-
-                        buffer[1] = reader1.readLine();
                         continue;
                     }
 
@@ -119,18 +78,9 @@ class Sorter {
                 }
             } else {
                 while (buffer[0] != null) {
-                    if (checkEmptyLine(buffer[0], input0) || !checkOrder(buffer[0], lastElement0, input0)) {
+                    if (checkLine(buffer[0], lastElement0, input0)) {
                         buffer[0] = reader0.readLine();
 
-                        continue;
-                    }
-
-                    try {
-                        checkType(buffer[0]);
-                    } catch (NumberFormatException e) {
-                        System.out.println("The integer sorting mode is turned on. " + buffer[0] + " is dropped, because it is not integer");
-
-                        buffer[0] = reader0.readLine();
                         continue;
                     }
 
@@ -159,10 +109,17 @@ class Sorter {
         return output;
     }
 
-    private void checkType(String string) {
-        if (!isStringType) {
-            Integer.parseInt(string);
+    private boolean checkType(String string) {
+        try {
+            if (!isStringType) {
+                Integer.parseInt(string);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("The integer sorting mode is turned on. " + string + " is dropped, because it is not integer");
+
+            return false;
         }
+        return true;
     }
 
     private boolean checkEmptyLine(String element, File inputFile) {
@@ -171,7 +128,6 @@ class Sorter {
 
             return true;
         }
-        ;
 
         return false;
     }
@@ -185,6 +141,10 @@ class Sorter {
         }
 
         return true;
+    }
+
+    private boolean checkLine(String line, String lastElement , File inputFile){
+        return checkEmptyLine(line, inputFile) || !checkType(line) || !checkOrder(line, lastElement, inputFile);
     }
 
     private int compare(String string1, String string2) {
