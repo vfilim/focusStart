@@ -8,8 +8,8 @@ class Sorter {
     boolean isDescending;
 
     public Sorter(SortMode sortMode) {
-        isStringType = sortMode.isStringType;
-        isDescending = sortMode.descending;
+        isStringType = sortMode.hasStringType();
+        isDescending = sortMode.isDescending();
     }
 
     File getSorted(File input0, File input1) {
@@ -30,13 +30,13 @@ class Sorter {
             String lastElement1 = buffer[1];
 
             while (buffer[0] != null && buffer[1] != null) {
-                if (!checkOrder(buffer[0], lastElement0, input0)){
+                if (checkEmptyLine(buffer[0], input0) || !checkOrder(buffer[0], lastElement0, input0)) {
                     buffer[0] = reader0.readLine();
 
                     continue;
                 }
 
-                if (!checkOrder(buffer[1], lastElement1, input1)){
+                if (checkEmptyLine(buffer[1], input1) || !checkOrder(buffer[1], lastElement1, input1)) {
                     buffer[1] = reader1.readLine();
 
                     continue;
@@ -77,11 +77,9 @@ class Sorter {
 
             if (buffer[0] == null) {
                 while (buffer[1] != null) {
-                    if (buffer[1].compareTo(lastElement1) < 0) {
-                        System.out.println("The input files must be already sorted. The file " + input1.getName() + " is not sorted. The program continued, but "
-                                + buffer[1] + " is dropped");
+                    if (checkEmptyLine(buffer[1], input1) || !checkOrder(buffer[1], lastElement1, input1)) {
+                        buffer[1] = reader0.readLine();
 
-                        buffer[1] = reader1.readLine();
                         continue;
                     }
 
@@ -102,11 +100,9 @@ class Sorter {
                 }
             } else {
                 while (buffer[0] != null) {
-                    if (buffer[0].compareTo(lastElement0) < 0) {
-                        System.out.println("The input files must be already sorted. The file " + input1.getName() + "  is not sorted. The program continued, but "
-                                + buffer[0] + " is dropped");
-
+                    if (checkEmptyLine(buffer[0], input0) || !checkOrder(buffer[0], lastElement0, input0)) {
                         buffer[0] = reader0.readLine();
+
                         continue;
                     }
 
@@ -150,8 +146,19 @@ class Sorter {
         }
     }
 
-    private boolean checkOrder(String element, String lastElement, File inputFile){
-        if(compare(element, lastElement) > 0){
+    private boolean checkEmptyLine(String element, File inputFile) {
+        if (element.equals("")) {
+            System.out.println("The file " + inputFile.getName() + " contains empty line, it is skipped");
+
+            return true;
+        }
+        ;
+
+        return false;
+    }
+
+    private boolean checkOrder(String element, String lastElement, File inputFile) {
+        if (compare(element, lastElement) > 0) {
             System.out.println("The input files must be already sorted. The file " + inputFile.getName() + " is not sorted. The program continued, but "
                     + element + " is dropped");
 
